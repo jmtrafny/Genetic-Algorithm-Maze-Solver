@@ -9,18 +9,34 @@ public class GAMazeSolver {
 	public static final int[][] MAZE_GRID = new int[][] { 
 			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
 			{ 1, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1 }, 
-			{ 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1 }, 
-			{ 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1 }, 
-			{ 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1 }, 
-			{ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1 },
+			{ 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1 }, 
+			{ 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1 },
+			{ 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1 }, 
+			{ 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1 }, 
+			{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1 },
 			{ 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1 }, 
 			{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 },
-			{ 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1 },
+			{ 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1 },
 			{ 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1 },
-			{ 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1 },
-			{ 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 3, 1 },
+			{ 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1 },
+			{ 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 3, 1 },
 			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } };
+			
+//			public static final int[][] MAZE_GRID = new int[][] { 
+//				{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+//				{ 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 }, 
+//				{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1 }, 
+//				{ 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1 },
+//				{ 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1 }, 
+//				{ 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1 }, 
+//				{ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1 },
+//				{ 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1 }, 
+//				{ 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1 },
+//				{ 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1 },
+//				{ 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1 },
+//				{ 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1 },
+//				{ 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 3, 1 },
+//				{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } };
 	
 	// Longest possible path ~= r-1(c/2)
 	public static final int GENOME_LENGTH = (int) Math.floor((MAZE_GRID.length - 1) * (MAZE_GRID[0].length / 2));
@@ -77,26 +93,33 @@ public class GAMazeSolver {
 
 				Genome parentA = matingPool.get(a);
 				Genome parentB = matingPool.get(b);
-				Genome child = parentA.randomCrossover(parentB);
+				//Genome child = parentA.randomCrossover(parentB);
+				Genome child = parentA.twoPtCrossover(parentB);
 				child.mutate();
 
 				generation[i] = child;
 			}
 			gen++;
 
-			if (gen >= 20000)
+			if (gen >= 1000)
 				finished = !finished;
 		}
 
-		// Print best solved maze
+		/*
+		 *  Print best solved maze... this is silly...
+		 */
 		int[][] solved_map = makeSolvedMap(bestGenome);
 		
 		System.out.println("fin: " + bestGenome.geneString());
 		for (int[] x : solved_map) {
-		   for (int y : x) {
-		        System.out.print(y + " ");
-		   }
-		   System.out.println();
+			for (int y : x) {
+				if (y == 0) System.out.print("   ");
+				if (y == 1) System.out.print(" X ");
+				if (y == 2) System.out.print(" S ");
+				if (y == 3) System.out.print(" G ");
+				if (y == 4) System.out.print(" * ");
+			}
+			System.out.println();
 		}
 	}
 

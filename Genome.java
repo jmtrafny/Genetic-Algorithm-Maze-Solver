@@ -7,7 +7,9 @@ public class Genome {
 	Random xd = new Random();
 
 	public static final char[] genes = { 'N', 'E', 'S', 'W', 'N', 'E', 'S', 'W', 'N', 'E', 'S', 'W', 'X'};
-	public static final double penalty_per_step = .25;
+	public static final double penalty_per_step = 1;
+	public static final double penalty_multiplier = 3;
+	public static final double dist_score_multiplier = 2;
 
 	public char[] genome;// = new char[GENOME_LENGTH];
 	public double fitness;
@@ -52,28 +54,28 @@ public class Genome {
 					pos = pos.getNeighbor(Direction.N);
 					penalty += penalty_per_step;
 				} else {
-					penalty++;
+					penalty += penalty_per_step * penalty_multiplier;
 				}
 			} else if (gene == 'E') {
 				if (e == 0 || e == 2 || e == 3) {
 					pos = pos.getNeighbor(Direction.E);
 					penalty += penalty_per_step;
 				} else {
-					penalty++;
+					penalty += penalty_per_step * penalty_multiplier;
 				}
 			} else if (gene == 'S') {
 				if (s == 0 || s == 2 || s == 3) {
 					pos = pos.getNeighbor(Direction.S);
 					penalty += penalty_per_step;
 				} else {
-					penalty++;
+					penalty += penalty_per_step * penalty_multiplier;
 				}
 			} else if (gene == 'W') {
 				if (w == 0 || w == 2 || w == 3) {
 					pos = pos.getNeighbor(Direction.W);
 					penalty += penalty_per_step;
 				} else {
-					penalty++;
+					penalty += penalty_per_step * penalty_multiplier;
 				}
 			} 
 		}
@@ -84,7 +86,7 @@ public class Genome {
 		double distFromStart = Math.sqrt(Math.pow(start_row - x1, 2) + Math.pow(start_col - y1, 2));
 		double distFromGoal = Math.sqrt(Math.pow(end_row - x1, 2) + Math.pow(end_col - y1, 2));
 
-		double distScore = 2 * (distFromStart - distFromGoal);
+		double distScore = dist_score_multiplier * (distFromStart - distFromGoal);
 		double mazeScore = distScore + bonus - penalty;
 		if (mazeScore <= distScore)
 			mazeScore = distScore;
@@ -95,12 +97,43 @@ public class Genome {
 		return mazeScore;
 	}
 
-	// Crossover function
+	// Single-Point Crossover function
 	public Genome randomCrossover(Genome partner) {
 		Genome child = new Genome(partner.genome.length);
 		int crosspoint = xd.nextInt(genome.length);
 		for (int i = 0; i < genome.length; i++) {
 			if (i < crosspoint)
+				child.genome[i] = genome[i];
+			else
+				child.genome[i] = partner.genome[i];
+		}
+		return child;
+	}
+	
+	// Two-Point Crossover function
+	public Genome twoPtCrossover(Genome partner) {
+		Genome child = new Genome(partner.genome.length);
+		
+		int crosspoint1 = xd.nextInt(genome.length);
+		int crosspoint2 = xd.nextInt(genome.length);
+		
+		// Ensure crosspoints are different...
+		if (crosspoint1 == crosspoint2){
+			if(crosspoint1 == 0){
+				crosspoint2++;
+			} else {
+				crosspoint1--;
+			}
+		}
+		// .. and crosspoint1 is lower than crosspoint2
+		if (crosspoint2 < crosspoint1) {
+			int temp = crosspoint1;
+			crosspoint1 = crosspoint2;
+			crosspoint2 = temp;
+		}
+		
+		for (int i = 0; i < genome.length; i++) {
+			if (i < crosspoint1 || i > crosspoint2)
 				child.genome[i] = genome[i];
 			else
 				child.genome[i] = partner.genome[i];
